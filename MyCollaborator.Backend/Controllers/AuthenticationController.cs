@@ -15,6 +15,7 @@ public class AuthenticationController : ControllerBase
         _authenticationService = authenticationService;
     }
 
+    [HttpPost("[action]")]
     public async ValueTask<IActionResult> AuthenticateAsync([FromBody] AuthenticationQuery query)
     {
         try
