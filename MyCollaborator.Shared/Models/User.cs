@@ -4,12 +4,12 @@ public class User
 {
     public User()
     {
-        Messages = new HashSet<Message>();
+        UserConnections = new HashSet<UserConnection>();
     }
     
     public Guid Id { get; set; }
     public string Username { get; set; }
     public string Telephone { get; set; }
     
-    public virtual ICollection<Message> Messages { get; set; }
+    public virtual ICollection<UserConnection> UserConnections { get; set; }
 }
