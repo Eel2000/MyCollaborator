@@ -1,0 +1,83 @@
+﻿@inherits LayoutComponentBase
+
+<div id="wrapper" class="wrapper-content">
+    <!--Side menu-->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="#">
+                    MyCollaborator
+                </a>
+            </li>
+            @foreach (var menuItem in _menuItems)
+            {
+                <li class="@(menuItem.IsSelected ? "active" : "")" @onclick="() => OnSelected(menuItem)">
+                    <a href="@menuItem.Href">@menuItem.Name</a>
+                </li>
+            }
+        </ul>
+    </div>
+    <!--end Side menu-->
+
+    <!--main content-->
+    <div id="page-content-wrapper">
+        <!--nav bar-->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button class="btn-menu btn btn-success btn-toggle-menu" type="button">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="ti-panel"></i>
+                                <p>Stats</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="ti-settings"></i>
+                                <p>Settings</p>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+        <!--end nav bar-->
+
+        <!--content-->
+        <div class="container-fluid">
+           @Body
+        </div>
+        <!--end content-->
+    </div>
+    <!--end main content-->
+</div>
+
+@code
+{
+    private List<MenuItem> _menuItems = default;
+
+    protected override Task OnInitializedAsync()
+    {
+        _menuItems = new()
+        {
+            new() { Id = 0, Name = "Dashboard", IsSelected = true, Href = "index" },
+            new() { Id = 1, Name = "Messaging", IsSelected = false, Href = "chat" },
+            new() { Id = 2, Name = "Planner", IsSelected = false, Href = "PlannerIndex" },
+        };
+        return base.OnInitializedAsync();
+    }
+
+    void OnSelected(MenuItem menuItem)
+    {
+        _menuItems.ForEach(i => { i.IsSelected = false; });
+        var item = _menuItems.FirstOrDefault(i => i.Id == menuItem.Id);
+        item.IsSelected = true;
+    }
+}
