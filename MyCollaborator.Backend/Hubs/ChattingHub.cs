@@ -30,4 +30,5 @@ public class ChattingHub : Hub<IChattingHub>
         await Clients.Clients(to.Select(t => t.Connection)).ReceiveFromFriend(message);
     }
     
+    
 }
