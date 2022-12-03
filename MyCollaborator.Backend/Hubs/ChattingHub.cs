@@ -37,12 +37,13 @@ public class ChattingHub : Hub<IChattingHub>
     {
         var to = await _context.UserConnection
             .Where(u => u.UserId == message.To)
-            .ToListAsync();
+            .Select(t => t.Connection)
+            .ToArrayAsync();
 
         await _cachingService
             .SaveItemInTheCacheAsync(message.From.ToString(), message, DateTimeOffset.Now.AddHours(1));
 
-        await Clients.Clients(to.Select(t => t.Connection)).ReceiveFromFriend(message);
+        await Clients.Clients(to).ReceiveFromFriend(message);
     }
 
     public async ValueTask IsUserTyping(Guid userId)
