@@ -3,6 +3,7 @@ using MyCollaborator.Backend.Contexts;
 using MyCollaborator.Backend.Hubs;
 using MyCollaborator.Backend.Services;
 using MyCollaborator.Backend.Services.Interfaces;
+using MyCollaborator.Backend.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddTransient<ICachingService, CachingService>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+
+builder.Services.AddHostedService<Synchronizer>();
 
 var app = builder.Build();
 

@@ -36,6 +36,24 @@ public class CachingService : ICachingService
         return default;
     }
 
+    public async ValueTask<IEnumerable<string>> GetAllCachedDataAsync()
+    {
+        var db = _database.Multiplexer.GetDatabase();
+        var endpoint = _database.Multiplexer.GetEndPoints().First();
+        {
+            var data = new List<string>();
+            var keys = _database.Multiplexer.GetServer(endpoint).Keys(pattern: "*").ToList();
+            foreach (var key in keys)
+            {
+                var rawData = await _database.StringGetAsync(key);
+                data.Add(rawData);
+            }
+            return data;
+        }
+
+        return default!;
+    }
+
     public async ValueTask<bool> SaveItemInTheCacheAsync<T>(string key, T item, DateTimeOffset limitTime)
     {
         TimeSpan expirationTime = limitTime.DateTime.Subtract(DateTime.Now);

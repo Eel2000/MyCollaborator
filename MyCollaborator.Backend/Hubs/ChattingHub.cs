@@ -12,9 +12,10 @@ public class ChattingHub : Hub<IChattingHub>
     private readonly ApplicationDbContext _context;
     private readonly ICachingService _cachingService;
 
-    public ChattingHub(ApplicationDbContext context)
+    public ChattingHub(ApplicationDbContext context, ICachingService cachingService)
     {
         _context = context;
+        _cachingService = cachingService;
     }
 
     public async ValueTask BroadCast(Message message)
@@ -42,6 +43,4 @@ public class ChattingHub : Hub<IChattingHub>
 
         await Clients.Clients(to.Select(t => t.Connection)).ReceiveFromFriend(message);
     }
-    
-    //TODO: add a background worker to retreive all the cached message at 00PM and save it all to database.
 }
