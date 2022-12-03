@@ -6,4 +6,5 @@ public interface IChattingHub
 {
     ValueTask ReceiveFromAll(Message message);
     ValueTask ReceiveFromFriend(Message message);
+    ValueTask UserTyping(bool istyping);
 }

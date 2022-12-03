@@ -1,7 +1,7 @@
-using MyCollaborator.Backend.Helperes;
-using MyCollaborator.Backend.Services.Interfaces;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using MyCollaborator.Backend.Helperes;
+using MyCollaborator.Backend.Services.Interfaces;
 
 namespace MyCollaborator.Backend.Services;
 
@@ -33,7 +33,7 @@ public class CachingService : ICachingService
             }
         }
 
-        return default;
+        return default!;
     }
 
     public async ValueTask<IEnumerable<string>> GetAllCachedDataAsync()
@@ -50,8 +50,6 @@ public class CachingService : ICachingService
             }
             return data;
         }
-
-        return default!;
     }
 
     public async ValueTask<bool> SaveItemInTheCacheAsync<T>(string key, T item, DateTimeOffset limitTime)

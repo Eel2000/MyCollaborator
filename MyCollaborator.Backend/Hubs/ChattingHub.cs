@@ -39,8 +39,13 @@ public class ChattingHub : Hub<IChattingHub>
             .ToListAsync();
 
         await _cachingService
-            .SaveItemInTheCacheAsync<Message>(message.From.ToString(), message, DateTimeOffset.Now.AddHours(1));
+            .SaveItemInTheCacheAsync(message.From.ToString(), message, DateTimeOffset.Now.AddHours(1));
 
         await Clients.Clients(to.Select(t => t.Connection)).ReceiveFromFriend(message);
+    }
+
+    public async ValueTask IsUserTyping(string to)
+    {
+        await Clients.Client(to).UserTyping(true);
     }
 }
