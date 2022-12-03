@@ -24,4 +24,24 @@ public class ChattingService : IChattingService
 
         return new Response<IReadOnlyList<Friends>>(Status.SUCCESS, "fetched", rawData);
     }
+
+    public async ValueTask<Response<string>> SaveUserConnectionId(ConnectionId connectionId)
+    {
+        if (await _context.User.AnyAsync(u => u.Id == connectionId.Id))
+        {
+            return new Response<string>(Status.FAILED, "user not found");
+        }
+        
+        var connection = new UserConnection
+        {
+            Id = Guid.NewGuid(),
+            UserId = connectionId.Id,
+            Connection = connectionId.connectionId
+        };
+
+        await _context.UserConnection.AddAsync(connection);
+        await _context.SaveChangesAsync();
+
+        return new Response<string>(Status.SUCCESS, "new connection added");
+    }
 }
