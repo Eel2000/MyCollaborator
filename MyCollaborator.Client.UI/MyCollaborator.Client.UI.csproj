@@ -16,4 +16,8 @@
       <ProjectReference Include="..\MyCollaborator.Shared\MyCollaborator.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DataAccess\Context" />
+    </ItemGroup>
+
 </Project>
