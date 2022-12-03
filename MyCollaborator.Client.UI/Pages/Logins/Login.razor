@@ -1,8 +1,10 @@
 @page "/"
+@using System.Diagnostics
 @layout AuthenticationLayout
 
 @inject NavigationManager _navigationManager
 @inject ApiService _apiService
+@inject LocalStorageInterop _localStorageInterop
 
 <div class="row login-page">
     <div class="col-md-4 col-lg-4 col-lg-offset-4">
@@ -11,10 +13,10 @@
         <form role="form" class="ng-pristine ng-valid">
             <div class="form-content">
                 <div class="form-group">
-                    <input type="tel" @bind-value="_query.Telephone" class="form-control input-underline input-lg" placeholder="Email">
+                    <input type="tel" @bind-value="_query.Telephone" class="form-control input-underline input-lg" placeholder="Telephone">
                 </div>
                 <div class="form-group">
-                    <input type="password" @bind-value="_query.Username" class="form-control input-underline input-lg" placeholder="Password">
+                    <input type="text" @bind-value="Username" class="form-control input-underline input-lg" placeholder="Username">
                 </div>
             </div>
             <button class="btn btn-info btn-lg" @onclick="() => LogIng()">
@@ -27,13 +29,35 @@
 @code {
     private AuthenticationQuery _query = new();
 
-    void LogIng()
+    private string _username;
+    public string Username
+    {
+        get { return _username;}
+        set
+        {
+            Debug.WriteLine(value);
+            _username = value;
+            _query.Username = value;
+        }
+    }
+
+    async ValueTask LogIng()
     {
         if (!string.IsNullOrWhiteSpace(_query.Telephone) || !string.IsNullOrWhiteSpace(_query.Username))
         {
-            //TODO: Call api to logIn or register
-            _navigationManager.NavigateTo("/index"); 
+            var apiCall = await _apiService.AuthenticateAsync(_query);
+            if (apiCall.Status == Status.SUCCESS)
+            {
+                await _localStorageInterop.SetItemAsync("connectedUser", apiCall.Data);
+                _navigationManager.NavigateTo("/index");
+            }
         }
+    }
+
+    void OnTyping(ChangeEventArgs eventArgs)
+    {
+        var typed = eventArgs?.Value.ToString();
+        Debug.WriteLine(typed);
     }
 
 }
