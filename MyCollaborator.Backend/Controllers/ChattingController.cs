@@ -28,4 +28,18 @@ public class ChattingController : ControllerBase
          return BadRequest(error);
       }
    }
+
+   [HttpPost("save-new-connection")]
+   public async ValueTask<IActionResult> SaveNewConnectionAsync([FromBody] ConnectionId connection)
+   {
+      try
+      {
+         return Ok(await _chattingService.SaveUserConnectionId(connection));
+      }
+      catch (Exception e)
+      {
+         var error = new Response<Exception>(Status.ERROR, e.Message, e);
+         return BadRequest(error);
+      }
+   }
 }
