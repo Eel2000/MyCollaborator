@@ -2,29 +2,25 @@
 @layout AuthenticationLayout
 
 @inject NavigationManager _navigationManager
+@inject ApiService _apiService
+@inject LocalStorageInterop _localStorageInterop
 
 <div class="row login-page">
-    <div class="col-md-4 col-lg-4 col-md-offset-4 col-lg-offset-4">
+    <div class="col-md-4 col-lg-4 col-lg-offset-4">
         <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="user-avatar img-thumbnail" alt="auth-avatar">
         <h1>MyCollaborator.com</h1>
         <form role="form" class="ng-pristine ng-valid">
             <div class="form-content">
-                <div class="form-group">  
-                    <input type="text" class="form-control input-underline input-lg" placeholder="Email">
+                <div class="form-group">
+                    <input type="tel" @bind-value="_query.Telephone" class="form-control input-underline input-lg" placeholder="Telephone">
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control input-underline input-lg" placeholder="Password">
+                    <input type="text" @bind-value="Username" class="form-control input-underline input-lg" placeholder="Username">
                 </div>
             </div>
             <button class="btn btn-info btn-lg" @onclick="() => LogIng()">
                 Log in
-            </button> &nbsp;
-            <button type="submit" class="btn btn-info btn-lg">Register</button>
+            </button>
         </form>
     </div>
 </div>
-
-@code {
-
-    void LogIng() => _navigationManager.NavigateTo("/index");//TODO: must add the login logic
-}

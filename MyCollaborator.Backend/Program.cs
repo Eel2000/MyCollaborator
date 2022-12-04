@@ -34,6 +34,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(x =>
+    x.AllowAnyHeader()
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyMethod());
+
 app.UseHttpsRedirection();
 app.MapHub<ChattingHub>("/chat");
 
