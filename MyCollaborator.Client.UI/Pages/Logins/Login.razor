@@ -1,5 +1,4 @@
 @page "/"
-@using System.Diagnostics
 @layout AuthenticationLayout
 
 @inject NavigationManager _navigationManager
@@ -32,32 +31,28 @@
     private string _username;
     public string Username
     {
-        get { return _username;}
+        get { return _username; }
         set
         {
-            Debug.WriteLine(value);
             _username = value;
             _query.Username = value;
         }
     }
 
-    async ValueTask LogIng()
+    async void LogIng()
     {
         if (!string.IsNullOrWhiteSpace(_query.Telephone) || !string.IsNullOrWhiteSpace(_query.Username))
         {
-            var apiCall = await _apiService.AuthenticateAsync(_query);
-            if (apiCall.Status == Status.SUCCESS)
-            {
-                await _localStorageInterop.SetItemAsync("connectedUser", apiCall.Data);
-                _navigationManager.NavigateTo("/index");
-            }
+            var apiCall = _apiService.AuthenticateAsync(_query);
+            await InvokeAsync(StateHasChanged);
+           //await _localStorageInterop.SetItemAsync("connectedUser", apiCall.Data);
+            _navigationManager.NavigateTo("/index");
         }
     }
 
     void OnTyping(ChangeEventArgs eventArgs)
     {
         var typed = eventArgs?.Value.ToString();
-        Debug.WriteLine(typed);
     }
 
 }

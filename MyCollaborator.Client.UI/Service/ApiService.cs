@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Net.Http.Json;
-using System.Text.Json;
 using MyCollaborator.Shared.DTOs;
 using MyCollaborator.Shared.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MyCollaborator.Client.UI.Service;
 
@@ -14,18 +16,29 @@ public class ApiService
         _httpClient = httpClient;
     }
 
-    public async ValueTask<Response<AuthenticateResponse>> AuthenticateAsync(AuthenticationQuery query)
+    public async Task<Response<User>> AuthenticateAsync(AuthenticationQuery query)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/myCollaborator/Authentication/Authenticate", query);
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var rawData = await response.Content.ReadAsStringAsync();
-            var data = JsonSerializer.Deserialize<Response<AuthenticateResponse>>(rawData);
-            return data;
-        }
+            var jData = JsonConvert.SerializeObject(query);
+            var body = new StringContent(jData, System.Text.Encoding.UTF8, "application/rawData");
+            var response = await _httpClient.PostAsJsonAsync("/api/myCollaborator/Authentication/Authenticate", query);
+            if (response.IsSuccessStatusCode)
+            {
+                var rawData = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<Response<User>>(rawData);
 
-        var errorResponse = JsonSerializer.Deserialize<Response<Exception>>(await response.Content.ReadAsStringAsync());
-        return new Response<AuthenticateResponse>(errorResponse.Status, errorResponse.Message);
+                return data;
+            }
+
+            var errorResponse = JsonConvert.DeserializeObject<Response<Exception>>(await response.Content.ReadAsStringAsync());
+            return new Response<User>(errorResponse.Status, errorResponse.Message);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+            return new Response<User>(Status.ERROR, e.Message);
+        }
     }
 
     public async ValueTask<Response<IReadOnlyList<Friends>>> GetFriendsListAsync(Guid userId)
@@ -41,11 +54,11 @@ public class ApiService
         var response = await _httpClient.PostAsJsonAsync("api/myCollaborator/Chatting/save-new-connection", connectionId);
         if (response.IsSuccessStatusCode)
         {
-            var data = JsonSerializer.Deserialize<Response<string>>(await response.Content.ReadAsStringAsync());
+            var data = JsonConvert.DeserializeObject<Response<string>>(await response.Content.ReadAsStringAsync());
             return data;
         }
 
-        var errorData = JsonSerializer.Deserialize<Response<Exception>>(await response.Content.ReadAsStringAsync());
+        var errorData = JsonConvert.DeserializeObject<Response<Exception>>(await response.Content.ReadAsStringAsync());
         return new Response<string>(errorData.Status, errorData.Message);
     }
 }

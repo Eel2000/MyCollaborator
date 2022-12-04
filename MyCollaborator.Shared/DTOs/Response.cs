@@ -2,6 +2,11 @@ namespace MyCollaborator.Shared.DTOs;
 
 public class Response<T> where T : class
 {
+    public Response()
+    {
+        //defaut constructor
+    }
+
     public Response(Status status, string message)
     {
         Status = status;
