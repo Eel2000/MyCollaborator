@@ -26,7 +26,9 @@ public sealed class LocalStorageInterop
     public async ValueTask<T?> GetItemAsync<T>(string key)
     {
         var data = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
-        return data is null ? JsonSerializer.Deserialize<T>(data) : default;
+        if (string.IsNullOrWhiteSpace(data))
+            return default;
+        return JsonSerializer.Deserialize<T>(data);
     }
 
     /// <summary>

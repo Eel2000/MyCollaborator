@@ -24,35 +24,3 @@
         </form>
     </div>
 </div>
-
-@code {
-    private AuthenticationQuery _query = new();
-
-    private string _username;
-    public string Username
-    {
-        get { return _username; }
-        set
-        {
-            _username = value;
-            _query.Username = value;
-        }
-    }
-
-    async void LogIng()
-    {
-        if (!string.IsNullOrWhiteSpace(_query.Telephone) || !string.IsNullOrWhiteSpace(_query.Username))
-        {
-            var apiCall = _apiService.AuthenticateAsync(_query);
-            await InvokeAsync(StateHasChanged);
-           //await _localStorageInterop.SetItemAsync("connectedUser", apiCall.Data);
-            _navigationManager.NavigateTo("/index");
-        }
-    }
-
-    void OnTyping(ChangeEventArgs eventArgs)
-    {
-        var typed = eventArgs?.Value.ToString();
-    }
-
-}
