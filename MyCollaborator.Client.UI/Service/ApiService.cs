@@ -20,8 +20,6 @@ public class ApiService
     {
         try
         {
-            var jData = JsonConvert.SerializeObject(query);
-            var body = new StringContent(jData, System.Text.Encoding.UTF8, "application/rawData");
             var response = await _httpClient.PostAsJsonAsync("/api/myCollaborator/Authentication/Authenticate", query);
             if (response.IsSuccessStatusCode)
             {
@@ -43,22 +41,36 @@ public class ApiService
 
     public async ValueTask<Response<IReadOnlyList<Friends>>> GetFriendsListAsync(Guid userId)
     {
-        var response =
-            await _httpClient.GetFromJsonAsync<Response<IReadOnlyList<Friends>>>(
-                "api/myCollaborator/Chatting/get-friend-list?user=" + userId);
-        return response;
+        try
+        {
+            var response =
+               await _httpClient.GetFromJsonAsync<Response<IReadOnlyList<Friends>>>(
+                   "api/myCollaborator/Chatting/get-friend-list?user=" + userId);
+            return response;
+        }
+        catch (Exception e)
+        {
+            return new Response<IReadOnlyList<Friends>>(Status.ERROR, e.Message);
+        }
     }
 
     public async ValueTask<Response<string>> SaveNewConnectionAsync(ConnectionId connectionId)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/myCollaborator/Chatting/save-new-connection", connectionId);
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var data = JsonConvert.DeserializeObject<Response<string>>(await response.Content.ReadAsStringAsync());
-            return data;
-        }
+            var response = await _httpClient.PostAsJsonAsync("api/myCollaborator/Chatting/save-new-connection", connectionId);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = JsonConvert.DeserializeObject<Response<string>>(await response.Content.ReadAsStringAsync());
+                return data;
+            }
 
-        var errorData = JsonConvert.DeserializeObject<Response<Exception>>(await response.Content.ReadAsStringAsync());
-        return new Response<string>(errorData.Status, errorData.Message);
+            var errorData = JsonConvert.DeserializeObject<Response<Exception>>(await response.Content.ReadAsStringAsync());
+            return new Response<string>(errorData.Status, errorData.Message);
+        }
+        catch (Exception e)
+        {
+            return new Response<string>(Status.ERROR, e.Message);
+        }
     }
 }
