@@ -7,4 +7,5 @@ public interface IChattingService
 {
     ValueTask<Response<IReadOnlyList<Friends>>> GetFriendsAsync(Guid user);
     ValueTask<Response<string>> SaveUserConnectionId(ConnectionId connectionId);
+    ValueTask<Response<IReadOnlyList<Discussion>>> LoadConverstionsAsync(Guid UserId);
 }

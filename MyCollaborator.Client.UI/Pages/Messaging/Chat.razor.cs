@@ -17,6 +17,7 @@ public partial class Chat : ComponentBase
     //TODO: Implement the logic for loading the friend list and chats onclicks
     private User user = default!;
     private ObservableCollection<Friends> _friends;
+    private Friends selectedFriend = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,4 +43,6 @@ public partial class Chat : ComponentBase
             Navigation.NavigateTo("/");
         }
     }
+
+    void OnFriendSelected(Friends friend) => selectedFriend = friend;//TODO: load the friend message if any.
 }

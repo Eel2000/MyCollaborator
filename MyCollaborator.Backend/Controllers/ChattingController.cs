@@ -42,4 +42,18 @@ public class ChattingController : ControllerBase
          return BadRequest(error);
       }
    }
+
+   [HttpGet("load-conversations")]
+   public async ValueTask<IActionResult> LoadConversationsAsync([FromQuery] Guid user)
+   {
+      try
+      {
+         return Ok(await _chattingService.LoadConverstionsAsync(user));
+      }
+      catch (Exception e)
+      {
+         var error = new Response<Exception>(Status.ERROR, e.Message, e);
+         return BadRequest(error);
+      }
+   }
 }
