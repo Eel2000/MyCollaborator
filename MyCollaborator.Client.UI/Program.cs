@@ -9,7 +9,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 #if DEBUG
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5123") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7225") });
 #elif RELEASE
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(/*specify the prod api base url*/) });
 #endif

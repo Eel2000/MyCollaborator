@@ -21,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddTransient<ICachingService, CachingService>();
+builder.Services.AddTransient<IChattingService, ChattingService>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddHostedService<Synchronizer>();

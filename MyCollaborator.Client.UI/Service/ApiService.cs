@@ -78,8 +78,17 @@ public class ApiService
     {
         try
         {
-            var data = await _httpClient.GetFromJsonAsync<Response<IReadOnlyList<Discussion>>>("/api/myCollaborator/Chatting/load-conversations?user=" + id);
-            return data;
+            var resposne = await _httpClient.GetAsync("/api/myCollaborator/Chatting/load-conversations?user=" + id);
+            if (resposne.IsSuccessStatusCode)
+            {
+                var rawData = await resposne.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<Response<IReadOnlyList<Discussion>>>(rawData);
+                return data;
+            }
+
+            var rawError = await resposne.Content.ReadAsStringAsync();
+            var error = JsonConvert.DeserializeObject<Response<Exception>>(rawError);
+            return new Response<IReadOnlyList<Discussion>>(error.Status, error.Message);
         }
         catch (Exception e)
         {
