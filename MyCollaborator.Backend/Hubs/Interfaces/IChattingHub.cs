@@ -9,4 +9,5 @@ public interface IChattingHub
     ValueTask ReceiveFromFriend(Message message);
     ValueTask UserTyping(bool isTyping);
     ValueTask UsernameChecking(Response<string> response);
+    ValueTask ReceiveConnectionId(string connectionId);
 }

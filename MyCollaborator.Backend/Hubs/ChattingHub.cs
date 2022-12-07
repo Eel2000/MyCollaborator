@@ -66,4 +66,9 @@ public class ChattingHub : Hub<IChattingHub>
             await Clients.Caller.UsernameChecking(new Response<string>(Status.SUCCESS, "Username available"));
         }
     }
+
+    public override async Task OnConnectedAsync()
+    {
+        await Clients.Caller.ReceiveConnectionId(Context.ConnectionId);
+    }
 }
