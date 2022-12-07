@@ -5,6 +5,7 @@ using MyCollaborator.Shared.Models;
 using System.Diagnostics;
 using MyCollaborator.Shared.DTOs;
 using System.Collections.ObjectModel;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace MyCollaborator.Client.UI.Pages.Messaging;
 
@@ -14,6 +15,7 @@ public partial class Chat : ComponentBase
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public ApiService Api { get; set; }
 
+    private HubConnection hubConnection;
     //TODO: Implement the logic for loading the friend list and chats onclicks
     private User user = default!;
     private ObservableCollection<User> _friends;
@@ -24,6 +26,7 @@ public partial class Chat : ComponentBase
     {
         try
         {
+            await HubConnectInitializationAsync();
             _friends = new();
             var usr = await LocalStorage.GetItemAsync<User>("connectedUser");
             if (usr is not null)
@@ -48,4 +51,13 @@ public partial class Chat : ComponentBase
     }
 
     void OnFriendSelected(User friend) => selectedFriend = friend;//TODO: load the friend message if any.
+
+    async Task HubConnectInitializationAsync()
+    {
+        hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7225").Build();
+
+
+
+        await hubConnection.StartAsync();
+    }
 }
