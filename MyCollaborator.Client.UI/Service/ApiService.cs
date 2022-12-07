@@ -73,4 +73,18 @@ public class ApiService
             return new Response<string>(Status.ERROR, e.Message);
         }
     }
+
+    public async ValueTask<Response<IReadOnlyList<Discussion>>> LoadDiscussionAsync(Guid id)
+    {
+        try
+        {
+            var data = await _httpClient.GetFromJsonAsync<Response<IReadOnlyList<Discussion>>>("/api/myCollaborator/Chatting/load-conversations?user=" + id);
+            return data;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return new Response<IReadOnlyList<Discussion>>(Status.ERROR, e.Message);
+        }
+    }
 }

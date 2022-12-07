@@ -16,8 +16,9 @@ public partial class Chat : ComponentBase
 
     //TODO: Implement the logic for loading the friend list and chats onclicks
     private User user = default!;
-    private ObservableCollection<Friends> _friends;
-    private Friends selectedFriend = default!;
+    private ObservableCollection<User> _friends;
+    private ObservableCollection<Discussion> _discussions;
+    private User selectedFriend = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,11 +29,13 @@ public partial class Chat : ComponentBase
             if (usr is not null)
             {
                 user = usr;
-                var apiCall = await Api.GetFriendsListAsync(user.Id);
+                var apiCall = await Api.LoadDiscussionAsync(user.Id);
                 if(apiCall.Status == Status.SUCCESS)
                 {
-                    var friendsList = apiCall.Data;
-                    _friends = new(friendsList);
+                    var discussions = apiCall.Data;
+                    _discussions = new(discussions);
+                    var userWithDiscussions = discussions.Select(x => x.Sender);
+                    _friends = new(userWithDiscussions);
                 }
             }
             else Navigation.NavigateTo("/");
@@ -44,5 +47,5 @@ public partial class Chat : ComponentBase
         }
     }
 
-    void OnFriendSelected(Friends friend) => selectedFriend = friend;//TODO: load the friend message if any.
+    void OnFriendSelected(User friend) => selectedFriend = friend;//TODO: load the friend message if any.
 }
