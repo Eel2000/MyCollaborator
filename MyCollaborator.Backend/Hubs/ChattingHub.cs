@@ -67,6 +67,19 @@ public class ChattingHub : Hub<IChattingHub>
         }
     }
 
+    public async ValueTask SaveConnectedUserConnectionIdAsync(Guid id)
+    {
+        var connections = new UserConnection
+        {
+            Id = Guid.NewGuid(),
+            Connection = Context.ConnectionId,
+            LastConnection = DateTimeOffset.Now
+        };
+        await _context.UserConnection.AddAsync(connections);
+        await _context.SaveChangesAsync();
+        await Clients.Caller.SaveConnection(new Response<string>(Status.SUCCESS, $"new connection id {Context.ConnectionId}- user {Context.User.Identity.Name} added"));
+    }
+
     public override async Task OnConnectedAsync()
     {
         await Clients.Caller.ReceiveConnectionId(Context.ConnectionId);

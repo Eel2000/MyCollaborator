@@ -10,4 +10,5 @@ public interface IChattingHub
     ValueTask UserTyping(bool isTyping);
     ValueTask UsernameChecking(Response<string> response);
     ValueTask ReceiveConnectionId(string connectionId);
+    ValueTask SaveConnection(Response<string> response);
 }
