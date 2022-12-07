@@ -73,4 +73,27 @@ public class ApiService
             return new Response<string>(Status.ERROR, e.Message);
         }
     }
+
+    public async ValueTask<Response<IReadOnlyList<Discussion>>> LoadDiscussionAsync(Guid id)
+    {
+        try
+        {
+            var resposne = await _httpClient.GetAsync("/api/myCollaborator/Chatting/load-conversations?user=" + id);
+            if (resposne.IsSuccessStatusCode)
+            {
+                var rawData = await resposne.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<Response<IReadOnlyList<Discussion>>>(rawData);
+                return data;
+            }
+
+            var rawError = await resposne.Content.ReadAsStringAsync();
+            var error = JsonConvert.DeserializeObject<Response<Exception>>(rawError);
+            return new Response<IReadOnlyList<Discussion>>(error.Status, error.Message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return new Response<IReadOnlyList<Discussion>>(Status.ERROR, e.Message);
+        }
+    }
 }

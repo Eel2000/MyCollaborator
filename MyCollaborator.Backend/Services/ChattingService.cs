@@ -44,4 +44,34 @@ public class ChattingService : IChattingService
 
         return new Response<string>(Status.SUCCESS, "new connection added");
     }
+
+    public async ValueTask<Response<IReadOnlyList<Discussion>>> LoadConverstionsAsync(Guid UserId)
+    {
+        var raw = await _context.Message.Where(m => m.From == UserId || m.To == UserId)
+            .ToListAsync();
+        var discussions = new List<Discussion>();
+        foreach (var message in raw)
+        {
+            Discussion discussion = new()
+            {
+                Id = message.Id,
+                Content = message.Content,
+                DateTime = message.DateTime
+            };
+            if (message.From == UserId)
+            {
+                var user = await _context.User.FirstOrDefaultAsync(u => u.Id == message.To);
+                discussion.Sender = user;
+            }
+            else if (message.To == UserId)
+            {
+                var user = await _context.User.FirstOrDefaultAsync(u => u.Id == message.From);
+                discussion.Sender = user;
+            }
+            
+            discussions.Add(discussion);
+        }
+
+        return new Response<IReadOnlyList<Discussion>>(Status.SUCCESS, "discussion loaded", discussions);
+    }
 }
