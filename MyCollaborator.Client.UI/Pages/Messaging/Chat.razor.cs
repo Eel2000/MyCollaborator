@@ -40,6 +40,7 @@ public partial class Chat : ComponentBase
                     var userWithDiscussions = discussions.Select(x => x.Sender);
                     _friends = new(userWithDiscussions);
                 }
+                await SaveConnectionAsync(usr);
             }
             else Navigation.NavigateTo("/");
         }
@@ -56,8 +57,17 @@ public partial class Chat : ComponentBase
     {
         hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7225").Build();
 
-
+        hubConnection.On<Response<string>>("SaveConnection", res =>
+        {
+            var dataReturned = res;
+            Console.WriteLine(res.Message);
+        });
 
         await hubConnection.StartAsync();
+    }
+
+    async Task SaveConnectionAsync(User user)
+    {
+        await hubConnection.InvokeAsync("SaveConnectedUserConnectionIdAsync", user.Id);
     }
 }

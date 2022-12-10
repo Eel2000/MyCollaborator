@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
 using MyCollaborator.Client.UI.Interops;
 using MyCollaborator.Client.UI.Service;
 using MyCollaborator.Shared.DTOs;
@@ -13,6 +14,7 @@ public partial class Login : ComponentBase
     [Inject] public LocalStorageInterop LocalStorageInterop { get; set; }
 
     private AuthenticationQuery _query = new();
+    private HubConnection hubConnection;
 
     private string _username;
     public string Username
@@ -27,11 +29,22 @@ public partial class Login : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        hubConnection = new HubConnectionBuilder().WithUrl("https://localhost:7225").Build();
+        await hubConnection.StartAsync();
+
         var user = await LocalStorageInterop.GetItemAsync<User>("connectedUser");
-        if(user is not null)
+        if (user is not null)
         {
-            _navigationManager.NavigateTo("/index");
+            await SaveConnectionAsync(user);
+            Navigator.NavigateTo("/index");
         }
+
+        hubConnection.On<Response<string>>("SaveConnection", res =>
+        {
+            var dataReturned = res;
+            Console.WriteLine(res.Message);
+        });
+
     }
 
     async Task LogIng()
@@ -42,7 +55,7 @@ public partial class Login : ComponentBase
             if (apiCall.Status == Status.SUCCESS)
             {
                 await LocalStorageInterop.SetItemAsync("connectedUser", apiCall.Data);
-                _navigationManager.NavigateTo("/index");
+                Navigator.NavigateTo("/index");
                 return;
             }
         }
@@ -51,5 +64,11 @@ public partial class Login : ComponentBase
     void OnTyping(ChangeEventArgs eventArgs)
     {
         var typed = eventArgs?.Value.ToString();
+    }
+
+    async Task SaveConnectionAsync(User user)
+    {
+        await hubConnection.StartAsync();
+        await hubConnection.InvokeAsync("SaveConnectedUserConnectionIdAsync", user.Id);
     }
 }
